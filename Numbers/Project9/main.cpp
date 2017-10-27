@@ -16,7 +16,14 @@ void drawCircle(GLfloat x, GLfloat y, GLfloat z, GLfloat radius);
 void draw(int x);
 GLuint DrawImage(int turn);
 int x = 1;
-
+float r = 0.4, g = 0.36, b = 0.3;
+float r1 = 0.76, g1 = 0.66, b1= 0.33;
+//glColor3f(0.4, 0.36, 0.3); // abyd 3a'm2
+//glColor3f(0.76, 0.66, 0.33); // bony fat7
+//glColor3f(0.75, 0.7, 0.64); // abyd fat7
+//glColor3f(0.66, 0.43, 0.227); // bony 3'am2
+//glColor3f(0.83, 0.83, 0.83); // abyd nos nos
+//glColor3f(0.27, 0.21, 0.18); // lon msh fahmo 
 int main(void)
 {
 	GLFWwindow *window;
@@ -51,27 +58,40 @@ int main(void)
 	{
 		glEnable(GL_DEPTH_TEST);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
+		glClearColor(0.0f, 0.0f, 0.f, 0.5f);
 		
 		double time =60;
 		
 		while (time >= 0.0f) {
+			glColor3f(r1, g1, b1); // bony fat7
 			draw(x);
 			GLuint texture;
+			glColor3f(r, g, b); // abyd 3a'm2
 			texture = DrawImage(x);
 			glEnable(GL_TEXTURE_2D);
 			glBindTexture(GL_TEXTURE_2D, texture);
 			glBegin(GL_QUADS);
 			glTexCoord2f(0.0f, 0.0f); glVertex3f(0.0f, 0.0f, 0.0f);  // Bottom Left Of The Texture and Quad
 			glTexCoord2f(1.0f, 0.0f); glVertex3f(500.0f, 0.0f, 0.0f);  // Bottom Right Of The Texture and Quad
-			glTexCoord2f(1.0f, 1.0f); glVertex3f(500.0f, 500.0f, 0.0f);  // Top Right Of The Texture and Quad
-			glTexCoord2f(0.0f, 1.0f); glVertex3f(0.0f, 500.0f, 0.0f);  // Top Left Of The Texture and Quad
+			glTexCoord2f(1.0f, 1.0f); glVertex3f(500.0f, 700.0f, 0.0f);  // Top Right Of The Texture and Quad
+			glTexCoord2f(0.0f, 1.0f); glVertex3f(0.0f, 700.0f, 0.0f);  // Top Left Of The Texture and Quad
 			glEnd();
 			glDisable(GL_TEXTURE_2D);
 			time--;
 		}
-		if (x >= 1 && x < 10)
+		if (x >= 1 && x < 10) {
+
+			if (x > 3 && x < 7) {
+				r1 = 0.75, g1 = 0.7, b1 = 0.64;
+				r = 0.66, g = 0.43, b = 0.227;
+			}
+			else if (x > 6) {
+			
+				r = 0.83, g = 0.83, b = 0.83;
+				r1 = 0.27, g1 = 0.21, b1 = 0.18;
+			}
 			x++;
+		}
 		// Swap front and back buffers
 		glfwSwapBuffers(window);
 
@@ -120,7 +140,7 @@ glDisableClientState(GL_VERTEX_ARRAY);
 
 void draw(int x)
 {
-GLfloat margin, radius, YP = 300;
+GLfloat margin, radius, YP = 400;
 radius = (x <= 5 ? (0.25*0.8*SCREEN_WIDTH) / x : (0.25*0.8*SCREEN_WIDTH) / 5);
 margin = (x <= 5 ? (0.5*0.2*SCREEN_WIDTH) / x : (0.5*0.2*SCREEN_WIDTH) / 5);
 for (int i = 1; i <= x; i++) {
