@@ -6,7 +6,7 @@
 #include <GL/glut.h>
 #include <stb_image.h>
 #include <string>
-#include <iostream>
+
 using namespace std;
 
 #define SCREEN_WIDTH 1200
@@ -16,34 +16,27 @@ void drawCircle(GLfloat x, GLfloat y, GLfloat z, GLfloat radius);
 void draw(int x);
 GLuint DrawImage(int turn);
 int x = 1;
-float r = 0.4, g = 0.36, b = 0.3;
-float r1 = 0.76, g1 = 0.66, b1= 0.33;
-//glColor3f(0.4, 0.36, 0.3); // abyd 3a'm2
-//glColor3f(0.76, 0.66, 0.33); // bony fat7
-//glColor3f(0.75, 0.7, 0.64); // abyd fat7
-//glColor3f(0.66, 0.43, 0.227); // bony 3'am2
-//glColor3f(0.83, 0.83, 0.83); // abyd nos nos
-//glColor3f(0.27, 0.21, 0.18); // lon msh fahmo 
+float colors[10][3] =
+{
+	{ 1, 0, 0 },
+	{ 1, 0.635, 0 },
+	{ 1, 0.965, 0 },
+	{ 0.118, 1, 0 },
+	{ 0, 1, 0.918 },
+	{ 0, 0.141, 1 },
+	{ 0.514, 0.004, 0.702 },
+	{ 1, 0, 0.776 },
+	{ 1, 0, 0.471 },
+	{ 1, 0, 0 },
+};
 int main(void)
 {
 	GLFWwindow *window;
-
-	// Initialize the library
 	if (!glfwInit())
-	{
 		return -1;
-	}
-
-	// Create a windowed mode window and its OpenGL context
 	window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Draw Circles", NULL, NULL);
-
 	if (!window)
-	{
-		glfwTerminate();
 		return -1;
-	}
-
-	// Make the window's context current
 	glfwMakeContextCurrent(window);
 
 	glViewport(0.0f, 0.0f, SCREEN_WIDTH, SCREEN_HEIGHT); // specifies the part of the window to which OpenGL will draw (in pixels), convert from normalised to pixels
@@ -52,21 +45,18 @@ int main(void)
 	glOrtho(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT, 0, 1); // essentially set coordinate system
 	glMatrixMode(GL_MODELVIEW); // (default matrix mode) modelview matrix defines how your objects are transformed (meaning translation, rotation and scaling) in your world
 	glLoadIdentity(); // same as above comment
-
 					  // Loop until the user closes the window
 	while (!glfwWindowShouldClose(window))
 	{
 		glEnable(GL_DEPTH_TEST);
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glClearColor(0.0f, 0.0f, 0.f, 0.5f);
-		
-		double time =60;
-		
+		glColor3f(1.0f, 1.0f, 1.0f);
+		double time = 30;
 		while (time >= 0.0f) {
-			glColor3f(r1, g1, b1); // bony fat7
 			draw(x);
+			glColor3f(1.0f, 1.0f, 1.0f);
 			GLuint texture;
-			glColor3f(r, g, b); // abyd 3a'm2
 			texture = DrawImage(x);
 			glEnable(GL_TEXTURE_2D);
 			glBindTexture(GL_TEXTURE_2D, texture);
@@ -79,96 +69,69 @@ int main(void)
 			glDisable(GL_TEXTURE_2D);
 			time--;
 		}
-		if (x >= 1 && x < 10) {
-
-			if (x > 3 && x < 7) {
-				r1 = 0.75, g1 = 0.7, b1 = 0.64;
-				r = 0.66, g = 0.43, b = 0.227;
-			}
-			else if (x > 6) {
-			
-				r = 0.83, g = 0.83, b = 0.83;
-				r1 = 0.27, g1 = 0.21, b1 = 0.18;
-			}
+		if (x < 10)
 			x++;
-		}
 		// Swap front and back buffers
 		glfwSwapBuffers(window);
-
 		// Poll for and process events
 		glfwPollEvents();
-
 	}
-
 	glfwTerminate();
-
 	return 0;
 }
-void drawCircle(GLfloat x, GLfloat y, GLfloat z, GLfloat radius)
+void drawCircle(GLfloat xP, GLfloat y, GLfloat z, GLfloat radius)
 {
-GLfloat twicePi = 2.0f * 3.14;
+	GLfloat twicePi = 2.0f * 3.14;
+	GLfloat circleVerticesX[363];
+	GLfloat circleVerticesY[363];
+	GLfloat circleVerticesZ[363];
+	static int count = 1;
 
-GLfloat circleVerticesX[363];
-GLfloat circleVerticesY[363];
-GLfloat circleVerticesZ[363];
+	glColor3f(colors[x - 1][0], colors[x - 1][1], colors[x - 1][2]);
+	circleVerticesX[0] = xP;
+	circleVerticesY[0] = y;
+	circleVerticesZ[0] = z;
 
-circleVerticesX[0] = x;
-circleVerticesY[0] = y;
-circleVerticesZ[0] = z;
-
-for (int i = 1; i < 363; i++)
-{
-circleVerticesX[i] = x + (radius * cos(i *  twicePi / 360));
-circleVerticesY[i] = y + (radius * sin(i * twicePi / 360));
-circleVerticesZ[i] = z;
+	for (int i = 1; i < 363; i++) {
+		circleVerticesX[i] = xP + (radius * cos(i *  twicePi / 360));
+		circleVerticesY[i] = y + (radius * sin(i * twicePi / 360));
+		circleVerticesZ[i] = z;
+	}
+	GLfloat allCircleVertices[(363) * 3];
+	for (int i = 0; i <363; i++) {
+		allCircleVertices[i * 3] = circleVerticesX[i];
+		allCircleVertices[(i * 3) + 1] = circleVerticesY[i];
+		allCircleVertices[(i * 3) + 2] = circleVerticesZ[i];
+	}
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glVertexPointer(3, GL_FLOAT, 0, allCircleVertices);
+	glDrawArrays(GL_TRIANGLE_FAN, 0, 363);
+	glDisableClientState(GL_VERTEX_ARRAY);
 }
 
-GLfloat allCircleVertices[(363) * 3];
-
-for (int i = 0; i <363; i++)
-{
-allCircleVertices[i * 3] = circleVerticesX[i];
-allCircleVertices[(i * 3) + 1] = circleVerticesY[i];
-allCircleVertices[(i * 3) + 2] = circleVerticesZ[i];
-}
-
-glEnableClientState(GL_VERTEX_ARRAY);
-glVertexPointer(3, GL_FLOAT, 0, allCircleVertices);
-glDrawArrays(GL_TRIANGLE_FAN, 0, 363);
-glDisableClientState(GL_VERTEX_ARRAY);
-}
-
-void draw(int x)
-{
-GLfloat margin, radius, YP = 400;
-radius = (x <= 5 ? (0.25*0.8*SCREEN_WIDTH) / x : (0.25*0.8*SCREEN_WIDTH) / 5);
-margin = (x <= 5 ? (0.5*0.2*SCREEN_WIDTH) / x : (0.5*0.2*SCREEN_WIDTH) / 5);
-for (int i = 1; i <= x; i++) {
-if (i <= 5)
-drawCircle((i)*margin + 2 * radius*(i - 0.5) + 580, YP, 0, radius);
-else
-drawCircle((i - 5)*margin + 2 * radius*(i - 5.5) + 580, YP - 120, 0, radius);
-}
+void draw(int x) {
+	GLfloat margin, radius, YP = 400;
+	radius = (x <= 5 ? (0.25*0.8*SCREEN_WIDTH) / x : (0.25*0.8*SCREEN_WIDTH) / 5);
+	margin = (x <= 5 ? (0.5*0.2*SCREEN_WIDTH) / x : (0.5*0.2*SCREEN_WIDTH) / 5);
+	for (int i = 1; i <= x; i++) {
+		if (i <= 5)
+			drawCircle((i)*margin + 2 * radius*(i - 0.5) + 580, YP, 0, radius);
+		else
+			drawCircle((i - 5)*margin + 2 * radius*(i - 5.5) + 580, YP - 120, 0, radius);
+	}
 }
 
 GLuint DrawImage(int turn) {
-
-
 	int width, height, nrChannels;
-
 	GLuint texture;
 	string location = "Pics/" + to_string(turn) + ".jpg";
 	stbi_set_flip_vertically_on_load(true);
-	unsigned char *data = stbi_load(location.c_str() , &width, &height, &nrChannels, 0);
+	unsigned char *data = stbi_load(location.c_str(), &width, &height, &nrChannels, 0);
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-	
 	stbi_image_free(data);
-
 	return texture;
-
-
 }
